@@ -95,4 +95,17 @@ describe("PriorityQueue", () => {
         expect(priorityQueue.pollCeiling(0)).toBe("three")
         expect(priorityQueue.pollCeiling(0)).toBe(null)
     })
+
+    it("keys are not unique", () => {
+        const priorityQueue = new PriorityQueue<number, string>((a, b) => { return a - b })
+
+        priorityQueue.offer(0, "zero-A")
+        priorityQueue.offer(0, "zero-B")
+        priorityQueue.offer(0, "zero-C")
+
+        expect(priorityQueue.poll()).toBe("zero-C")
+        expect(priorityQueue.poll()).toBe("zero-B")
+        expect(priorityQueue.poll()).toBe("zero-A")
+        expect(priorityQueue.poll()).toBe(null)
+    })
 })

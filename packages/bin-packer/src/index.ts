@@ -13,7 +13,7 @@ export function packBins(contentIdToSize: Readonly<ContentIdToSize>, numBins: nu
     }
 
     let totalSize = 0
-    const unpackedContents = new PriorityQueue<Size, UnpackedContent>(
+    const unpackedContents = new PriorityQueue<Size, Content>(
         (a, b) => {
             return b - a // Largest size at front of queue.
         }
@@ -21,6 +21,10 @@ export function packBins(contentIdToSize: Readonly<ContentIdToSize>, numBins: nu
 
     for (const id in contentIdToSize) {
         const size = contentIdToSize[id]!
+        if (size <= 0) {
+            continue
+        }
+
         totalSize += size
         unpackedContents.offer(size, {
             id,
@@ -30,13 +34,15 @@ export function packBins(contentIdToSize: Readonly<ContentIdToSize>, numBins: nu
         })
     }
 
-    const maxBinSize = totalSize / uniformityCoefficient
-    let sizeLeftInLeastPackedBin = maxBinSize
+    const maxBinSize = totalSize / (numBins * uniformityCoefficient)
 
-    const bins: PackedBin[] = new Array(numBins).map(() => {
-        return { size: 0, content: [] }
-    })
+    const bins = new Array<PackedBin>(numBins)
+    for (let i = 0; i < bins.length; i++) {
+        bins[i] = { size: 0, contents: [] }
+    }
     let currentBinIndex = 0
+    let leastPackedBinIndex = 0
+    let sizeLeftInLeastPackedBin = maxBinSize
 
     while (unpackedContents.getSize() > 0) {
         const didSplit = splitUnpackedContentIfTooLarge(unpackedContents, sizeLeftInLeastPackedBin)
@@ -47,22 +53,24 @@ export function packBins(contentIdToSize: Readonly<ContentIdToSize>, numBins: nu
 
         const binToPack = bins[currentBinIndex]!
         const didPack = tryPackBin(unpackedContents, binToPack, maxBinSize)
-        if (didPack) {
-            sizeLeftInLeastPackedBin = Math.min(maxBinSize - binToPack.size, sizeLeftInLeastPackedBin)
-        } else {
+        if (!didPack) {
             currentBinIndex++
 
             // TODO handle properly...?
             if (currentBinIndex >= numBins) {
                 throw new Error("Uh oh...")
             }
+        } else if (currentBinIndex === leastPackedBinIndex) {
+            leastPackedBinIndex = getLeastPackedBinIndex(bins)
+            const leastPackedBin = bins[leastPackedBinIndex]!
+            sizeLeftInLeastPackedBin = maxBinSize - leastPackedBin.size
         }
     }
 
     return bins
 }
 
-function splitUnpackedContentIfTooLarge(unpackedContents: PriorityQueue<Size, UnpackedContent>, maxSize: number): boolean {
+function splitUnpackedContentIfTooLarge(unpackedContents: PriorityQueue<Size, Content>, maxSize: number): boolean {
     const largest = unpackedContents.peek()!
     if (largest.size <= maxSize) {
         return false
@@ -72,13 +80,13 @@ function splitUnpackedContentIfTooLarge(unpackedContents: PriorityQueue<Size, Un
     unpackedContents.poll()
     const splitSize = largest.size / 2
     const splitNumShards = largest.numShards * 2
-    const a: UnpackedContent = {
+    const a: Content = {
         id: largest.id,
         size: splitSize,
         shardIndex: largest.shardIndex,
         numShards: splitNumShards
     }
-    const b: UnpackedContent = {
+    const b: Content = {
         id: largest.id,
         size: splitSize,
         shardIndex: largest.shardIndex + largest.numShards,
@@ -89,7 +97,7 @@ function splitUnpackedContentIfTooLarge(unpackedContents: PriorityQueue<Size, Un
     return true
 }
 
-function tryPackBin(unpackedContents: PriorityQueue<Size, UnpackedContent>, bin: PackedBin, maxBinSize: number): boolean {
+function tryPackBin(unpackedContents: PriorityQueue<Size, Content>, bin: PackedBin, maxBinSize: number): boolean {
     const sizeLeft = maxBinSize - bin.size
     const largestContentThatFitsInBin = unpackedContents.pollCeiling(sizeLeft)
     if (largestContentThatFitsInBin === null) {
@@ -97,8 +105,21 @@ function tryPackBin(unpackedContents: PriorityQueue<Size, UnpackedContent>, bin:
     }
 
     bin.size += largestContentThatFitsInBin.size
-    bin.content.push(largestContentThatFitsInBin)
+    bin.contents.push(largestContentThatFitsInBin)
     return true
+}
+
+function getLeastPackedBinIndex(bins: PackedBin[]): number {
+    let leastPackedBinIndex = 0
+    let leastPackedBinSize = Infinity
+    for (let i = 0; i < bins.length; i++) {
+        const bin = bins[i]!
+        if (bin.size < leastPackedBinSize) {
+            leastPackedBinIndex = i
+            leastPackedBinSize = bin.size
+        }
+    }
+    return leastPackedBinIndex
 }
 
 type ContentId = string
@@ -106,14 +127,9 @@ type Size = number
 type ContentIdToSize = Record<ContentId, Size>
 type PackedBin = {
     size: Size
-    content: PackedContent[]
+    contents: Content[]
 }
-type PackedContent = {
-    id: ContentId
-    shardIndex: number
-    numShards: number
-}
-type UnpackedContent = {
+type Content = {
     id: ContentId
     size: Size
     shardIndex: number
