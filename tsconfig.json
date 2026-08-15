@@ -1,0 +1,7 @@
+{
+  "files": [],
+  "references": [
+    { "path": "packages/dummy-package" },
+    { "path": "apps/dummy-app" }
+  ]
+}
