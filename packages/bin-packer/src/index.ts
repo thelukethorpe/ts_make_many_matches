@@ -1,4 +1,4 @@
-import { PriorityQueue } from "./PriorityQueue.ts"
+import { PriorityQueue } from "./PriorityQueue.js"
 
 /**
  * Packs content into bins according to a given uniformity, sharding the content if necessary.
