@@ -1,7 +1,14 @@
 {
   "files": [],
   "references": [
-    { "path": "packages/dummy-package" },
-    { "path": "apps/dummy-app" }
+    {
+      "path": "packages/bin-packer"
+    },
+    {
+      "path": "packages/dummy-package"
+    },
+    {
+      "path": "apps/dummy-app"
+    }
   ]
 }
