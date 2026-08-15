@@ -55,11 +55,6 @@ export function packBins(contentIdToSize: Readonly<ContentIdToSize>, numBins: nu
         const didPack = tryPackBin(unpackedContents, binToPack, maxBinSize)
         if (!didPack) {
             currentBinIndex++
-
-            // TODO handle properly...?
-            if (currentBinIndex >= numBins) {
-                throw new Error("Uh oh...")
-            }
         } else if (currentBinIndex === leastPackedBinIndex) {
             leastPackedBinIndex = getLeastPackedBinIndex(bins)
             const leastPackedBin = bins[leastPackedBinIndex]!
