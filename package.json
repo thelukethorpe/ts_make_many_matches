@@ -12,7 +12,7 @@
     "clean": "rm -rf apps/*/dist packages/*/dist apps/*/tsconfig.tsbuildinfo packages/*/tsconfig.tsbuildinfo",
     "typecheck": "tsc -b --pretty false",
     "lint": "eslint . --max-warnings=0",
-    "test": "npm run build --workspace @filthyrat/dummy-package && vitest run"
+    "test": "npm run build && vitest run"
   },
   "devDependencies": {
     "@eslint/js": "^9.34.0",

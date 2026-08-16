@@ -5,9 +5,6 @@
       "path": "packages/bin-packer-service"
     },
     {
-      "path": "packages/dummy-package"
-    },
-    {
       "path": "packages/pack-bins"
     }
   ]
