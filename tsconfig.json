@@ -9,6 +9,9 @@
     },
     {
       "path": "apps/dummy-app"
-    }
+    },
+    {
+      "path": "apps/match-state-shard"
+    },
   ]
 }

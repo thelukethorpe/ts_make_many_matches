@@ -1,0 +1,18 @@
+{
+  "name": "@filthyrat/match-state-shard",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "run": "npm run build --workspace @filthyrat/dummy-package && npm run build && node dist/cli.js",
+    "typecheck": "tsc -p tsconfig.json --pretty false",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@fastify/type-provider-typebox": "^6.1.0",
+    "@filthyrat/dummy-package": "0.0.0",
+    "@sinclair/typebox": "^0.34.52",
+    "fastify": "^5.12.0"
+  }
+}
