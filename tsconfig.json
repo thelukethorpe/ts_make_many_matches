@@ -2,9 +2,6 @@
   "files": [],
   "references": [
     {
-      "path": "apps/dummy-app"
-    },
-    {
       "path": "packages/bin-packer-service"
     },
     {
