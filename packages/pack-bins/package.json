@@ -1,0 +1,25 @@
+{
+  "name": "@filthyrat/pack-bins",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/thelukethorpe/ts_make_many_matches.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/thelukethorpe/ts_make_many_matches/issues"
+  },
+  "homepage": "https://github.com/thelukethorpe/ts_make_many_matches#readme",
+  "private": "true",
+  "type": "module",
+  "dependencies": {
+    "js-sdsl": "^4.4.2"
+  }
+}
