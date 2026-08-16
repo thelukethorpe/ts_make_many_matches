@@ -1,11 +1,39 @@
+import type { DeepReadonly } from "ts-essentials"
+
 export class GameLobbyState {
     private readonly gameIdToState: GameIdToState = {}
+    private readonly updateListenerIdToCallback: Record<UpdateListenerId, OnUpdateCallback> = {}
+    private nextUpdateListenerId: UpdateListenerId = 0
 
-    constructor(private readonly callbacks: LobbyStateCallbacks) { }
+    view(): DeepReadonly<GameIdToState> {
+        return this.gameIdToState
+    }
 
     update(payload: UpdatePayload): void {
         this.updateInternal(payload)
-        this.callbacks.onUpdate(payload)
+        this.notifyUpdateListeners(payload)
+    }
+
+    registerUpdateListener(onUpdateCallback: OnUpdateCallback): UpdateListenerId {
+        const updateListenerId = this.nextUpdateListenerId++
+        this.updateListenerIdToCallback[updateListenerId] = onUpdateCallback
+        return updateListenerId
+    }
+
+    unregisterUpdateListener(updateListenerId: UpdateListenerId): void {
+        delete this.updateListenerIdToCallback[updateListenerId]
+    }
+
+    private notifyUpdateListeners(payload: UpdatePayload): void {
+        const payloadBuffer = JSON.stringify(payload)
+        for (const updateListenerId in this.updateListenerIdToCallback) {
+            const onUpdateCallback = this.updateListenerIdToCallback[updateListenerId]!
+            try {
+                onUpdateCallback(payloadBuffer)
+            } catch (e) {
+                console.error(`Error notifying listener ${updateListenerId} of update:`, e)
+            }
+        }
     }
 
     private updateInternal({ gameId, lobbyId, ccu }: UpdatePayload): void {
@@ -70,14 +98,13 @@ export class GameLobbyState {
     }
 }
 
-type LobbyStateCallbacks = Readonly<{
-    onUpdate(payload: UpdatePayload): void
-}>
 type UpdatePayload = Readonly<{
     gameId: GameId
     lobbyId: LobbyId
     ccu: CCU
 }>
+type OnUpdateCallback = (payloadBuffer: string) => void
+type UpdateListenerId = number
 
 type GameIdToState = Record<GameId, GameState>
 type GameState = {

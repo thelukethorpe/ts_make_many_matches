@@ -11,7 +11,7 @@
       "path": "apps/dummy-app"
     },
     {
-      "path": "apps/match-state-shard"
+      "path": "apps/lobby-state-shard"
     },
   ]
 }

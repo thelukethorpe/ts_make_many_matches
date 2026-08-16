@@ -1,5 +1,5 @@
 {
-  "name": "@filthyrat/match-state-shard",
+  "name": "@filthyrat/lobby-state-shard",
   "version": "0.0.0",
   "private": true,
   "type": "module",
@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@fastify/type-provider-typebox": "^6.1.0",
+    "@fastify/websocket": "^11.3.0",
     "@filthyrat/dummy-package": "0.0.0",
     "@sinclair/typebox": "^0.34.52",
     "fastify": "^5.12.0"
