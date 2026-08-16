@@ -2,7 +2,7 @@
   "files": [],
   "references": [
     {
-      "path": "packages/bin-packer"
+      "path": "packages/pack-bins"
     },
     {
       "path": "packages/dummy-package"
