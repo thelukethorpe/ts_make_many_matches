@@ -2,10 +2,10 @@
   "files": [],
   "references": [
     {
-      "path": "packages/pack-bins"
+      "path": "packages/dummy-package"
     },
     {
-      "path": "packages/dummy-package"
+      "path": "packages/pack-bins"
     },
     {
       "path": "apps/dummy-app"

@@ -317,11 +317,11 @@ describe("packBins", () => {
         let totalSize = 0
         let totalError = 0
         for (const bin of bins) {
-            totalSize = bin.size
+            totalSize += bin.size
             totalError = Math.abs(bin.size - 74445.6)
         }
 
         expect(totalSize).toBe(7444560)
-        expect(totalError / 100).lessThanOrEqual(74445.6 * 0.1)
+        expect(totalError / 100).lessThanOrEqual(0.05 * 7444560 / 100)
     })
 })
