@@ -84,6 +84,84 @@ describe("packBins", () => {
         ])
     })
 
+    it("splits single large content with lower uniformity", () => {
+        const bins = packBins({
+            "three": 3,
+        }, 3, 0.75)
+
+        expect(bins).toEqual([
+            {
+                "contents": [
+                    {
+                        "id": "three",
+                        "numShards": 4,
+                        "shardIndex": 2,
+                        "size": 0.75,
+                    },
+                    {
+                        "id": "three",
+                        "numShards": 8,
+                        "shardIndex": 5,
+                        "size": 0.375,
+                    },
+                ],
+                "size": 1.125,
+            },
+            {
+                "contents": [
+                    {
+                        "id": "three",
+                        "numShards": 4,
+                        "shardIndex": 0,
+                        "size": 0.75,
+                    },
+                    {
+                        "id": "three",
+                        "numShards": 8,
+                        "shardIndex": 1,
+                        "size": 0.375,
+                    },
+                ],
+                "size": 1.125,
+            },
+            {
+                "contents": [
+                    {
+                        "id": "three",
+                        "numShards": 4,
+                        "shardIndex": 3,
+                        "size": 0.75,
+                    },
+                ],
+                "size": 0.75,
+            },
+        ])
+    })
+
+    it("duplicate content", () => {
+        const bins = packBins({
+            "three-A": 3,
+            "three-B": 3,
+            "four-A": 4,
+            "four-B": 4,
+        }, 2, 1)
+
+        expect(bins).toEqual([
+            {
+                size: 7, contents: [
+                    { id: "four-B", size: 4, shardIndex: 0, numShards: 1 },
+                    { id: "three-B", size: 3, shardIndex: 0, numShards: 1 }
+                ]
+            },
+            {
+                size: 7, contents: [
+                    { id: "four-A", size: 4, shardIndex: 0, numShards: 1 },
+                    { id: "three-A", size: 3, shardIndex: 0, numShards: 1 }
+                ]
+            },
+        ])
+    })
+
     it("irregular content with lower uniformity", () => {
         const bins = packBins({
             "two": 2,
@@ -239,8 +317,8 @@ describe("packBins", () => {
         let totalSize = 0
         let totalError = 0
         for (const bin of bins) {
-            totalSize += bin.size
-            totalError += Math.abs(bin.size - 74445.6)
+            totalSize = bin.size
+            totalError = Math.abs(bin.size - 74445.6)
         }
 
         expect(totalSize).toBe(7444560)
